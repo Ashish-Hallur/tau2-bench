@@ -1,6 +1,6 @@
 # User simulator review
 
-The [two-page report source](REPORT.md) diagnoses two limitations and proposes a
+The [final two-page PDF](user-simulator-review.pdf) and [editable source](REPORT.md) diagnose two limitations and propose a
 small experiment. This is an experimental fork, not a claim of improved official
 benchmark performance. The implementation, tests and evidence accompany the report in this fork.
 
@@ -34,6 +34,12 @@ action-history discrepancy. Neither recorded reward establishes the causal
 effect of the simulator behavior on task success.
 
 ## Implementation and verification
+
+Implementation and evidence commit: `be114023b4de76f70400cc0505db133b170e1d5e`.
+The PDF links to this immutable evidence snapshot.
+Repository-wide Ruff lint and formatting checks passed before publication;
+GNU Make was unavailable on Windows, so its checks were run directly.
+The format check verified all 658 Python files without rewriting them.
 
 `src/tau2/domains/telecom/user_tools.py`: optional `enabled` argument on
 `toggle_roaming` and `toggle_wifi`. Explicit target states are idempotent;
