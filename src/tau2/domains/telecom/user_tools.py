@@ -516,10 +516,25 @@ class TelecomUserTools(ToolKitBase):
         return "Data connection broken."
 
     @is_tool(ToolType.WRITE)
-    def toggle_roaming(self) -> str:
+    def toggle_roaming(self, enabled: Optional[bool] = None) -> str:
         """Toggles Data Roaming ON or OFF. When ON, your phone can use data networks in areas outside your carrier's coverage.
-        Returns the new data roaming status.
+
+        For an instruction to turn roaming ON or OFF, pass the requested state.
+        An explicit state leaves an already-correct setting unchanged. Omit it
+        only when the agent explicitly asks you to toggle the switch.
+
+        Args:
+            enabled: Requested ON (true) or OFF (false) state. Omit or use null
+                to invert the current setting, preserving legacy toggle behavior.
+
+        Returns:
+            The resulting data roaming status and phone status bar.
         """
+        if enabled is not None and self.device.roaming_enabled == enabled:
+            return (
+                f"Data Roaming is already {'ON' if enabled else 'OFF'}; unchanged."
+                f"\nStatus Bar: {self._check_status_bar()}"
+            )
         new_state = self._toggle_roaming()
         status_update = f"Data Roaming is now {'ON' if new_state else 'OFF'}."
         return f"{status_update}\nStatus Bar: {self._check_status_bar()}"
@@ -667,10 +682,26 @@ class TelecomUserTools(ToolKitBase):
         }
 
     @is_tool(ToolType.WRITE)
-    def toggle_wifi(self) -> str:
+    def toggle_wifi(self, enabled: Optional[bool] = None) -> str:
         """Toggles your phone's Wi-Fi radio ON or OFF. Controls whether your phone can discover and connect to wireless networks for internet access.
-        Returns the new Wi-Fi status.
+
+        For an instruction to turn or keep Wi-Fi ON or OFF, pass the requested
+        state. An explicit state leaves an already-correct setting unchanged.
+        Omit it only when the agent explicitly asks you to toggle the switch.
+
+        Args:
+            enabled: Requested ON (true) or OFF (false) state. Omit or use null
+                to invert the current setting, preserving legacy toggle behavior.
+
+        Returns:
+            The resulting Wi-Fi status and phone status bar, or an error if
+            a change is blocked by Airplane Mode.
         """
+        if enabled is not None and self.device.wifi_enabled == enabled:
+            return (
+                f"Wi-Fi is already {'ON' if enabled else 'OFF'}; unchanged."
+                f"\nStatus Bar: {self._check_status_bar()}"
+            )
         new_state = self._toggle_wifi()
         if new_state is None:
             return f"Cannot change Wi-Fi settings while Airplane Mode is ON.\nStatus Bar: {self._check_status_bar()}"
